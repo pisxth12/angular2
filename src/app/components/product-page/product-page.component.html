@@ -1,0 +1,195 @@
+<div class="product-page">
+  <!-- Header -->
+  <div class="page-header">
+    <h1 class="page-title">Our Products</h1>
+    <p class="page-subtitle">Browse our collection of {{ allProducts.length }}+ premium products</p>
+  </div>
+  
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <input 
+        type="text" 
+        placeholder="Search products..." 
+        (input)="onSearch($event)"
+        [value]="searchQuery"
+        class="search-input">
+      <span class="search-icon">🔍</span>
+    </div>
+    
+    <div class="sort-box">
+      <select class="sort-select" (change)="onSortChange($event)">
+        <option value="featured">Featured</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+        <option value="rating">Highest Rated</option>
+        <option value="name">Name: A to Z</option>
+      </select>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Sidebar Filters -->
+    <aside class="filters-sidebar">
+      <h3 class="sidebar-title">Filters</h3>
+      
+      <!-- Categories -->
+      <div class="filter-section">
+        <h4>Categories</h4>
+        <ul class="category-list">
+          <li>
+            <button 
+              class="category-link" 
+              [class.active]="!selectedCategory"
+              (click)="filterByCategory('')">
+              All Products
+              <span class="count">({{ allProducts.length }})</span>
+            </button>
+          </li>
+          <li *ngFor="let category of categories">
+            <button 
+              class="category-link" 
+              [class.active]="selectedCategory === category"
+              (click)="filterByCategory(category)">
+              {{ category }}
+              <span class="count">
+                ({{ allProducts.filter(p => p.category === category).length }})
+              </span>
+            </button>
+          </li>
+        </ul>
+      </div>
+      
+      <!-- Price Range -->
+      <div class="filter-section">
+        <h4>Price Range</h4>
+        <div class="price-range">
+          <div class="price-inputs">
+            <input 
+              type="number" 
+              [(ngModel)]="priceRange.min" 
+              (change)="onPriceRangeChange()"
+              class="price-input"
+              min="0"
+              [max]="priceRange.max">
+            <span>to</span>
+            <input 
+              type="number" 
+              [(ngModel)]="priceRange.max" 
+              (change)="onPriceRangeChange()"
+              class="price-input"
+              [min]="priceRange.min"
+              [max]="maxPrice">
+          </div>
+          <div class="price-slider">
+            <input 
+              type="range" 
+              [(ngModel)]="priceRange.min" 
+              (change)="onPriceRangeChange()"
+              min="0" 
+              [max]="maxPrice"
+              class="range-input">
+            <input 
+              type="range" 
+              [(ngModel)]="priceRange.max" 
+              (change)="onPriceRangeChange()"
+              min="0" 
+              [max]="maxPrice"
+              class="range-input">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stock Filter -->
+      <div class="filter-section">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="inStockOnly" 
+            (change)="onStockFilterChange()">
+          <span class="checkbox-text">In Stock Only</span>
+        </label>
+      </div>
+      
+      <!-- Active Filters -->
+      <div class="active-filters" *ngIf="selectedCategory || searchQuery || inStockOnly || priceRange.min > 0 || priceRange.max < maxPrice">
+        <h4>Active Filters:</h4>
+        <div class="filter-tags">
+          <span class="filter-tag" *ngIf="selectedCategory" (click)="filterByCategory('')">
+            {{ selectedCategory }} ✕
+          </span>
+          <span class="filter-tag" *ngIf="searchQuery" (click)="onSearch({target: {value: ''}})">
+            "{{ searchQuery }}" ✕
+          </span>
+          <span class="filter-tag" *ngIf="inStockOnly" (click)="inStockOnly = false; onStockFilterChange()">
+            In Stock ✕
+          </span>
+          <span class="filter-tag" *ngIf="priceRange.min > 0 || priceRange.max < maxPrice" (click)="priceRange = {min: 0, max: maxPrice}; onPriceRangeChange()">
+            ${{ priceRange.min }} - ${{ priceRange.max }} ✕
+          </span>
+        </div>
+        <button class="clear-filters" (click)="clearFilters()">Clear All</button>
+      </div>
+    </aside>
+    
+    <!-- Products Grid -->
+    <section class="products-section">
+      <!-- Loading State -->
+      <div class="loading-state" *ngIf="loading">
+        <div class="spinner"></div>
+        <p>Loading amazing products...</p>
+      </div>
+      
+      <!-- No Results -->
+      <div class="no-results" *ngIf="!loading && filteredProducts.length === 0">
+        <div class="no-results-icon">🔍</div>
+        <h3>No Products Found</h3>
+        <p>We couldn't find any products matching your criteria.</p>
+        <button class="btn-reset" (click)="clearFilters()">Reset Filters</button>
+      </div>
+      
+      <!-- Results -->
+      <div *ngIf="!loading && filteredProducts.length > 0">
+        <div class="results-info">
+          Showing {{ getStartIndex() }}-{{ getEndIndex() }} of {{ filteredProducts.length }} products
+        </div>
+        
+        <div class="products-grid">
+          <app-product-card 
+            *ngFor="let product of displayedProducts" 
+            [product]="product"
+            (quickView)="handleQuickView($event)">
+          </app-product-card>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" *ngIf="totalPages > 1">
+          <button 
+            class="page-btn prev" 
+            [disabled]="currentPage === 1"
+            (click)="changePage(currentPage - 1)">
+            ← Previous
+          </button>
+          
+          <div class="page-numbers">
+            <button 
+              *ngFor="let page of [].constructor(totalPages); let i = index"
+              class="page-number" 
+              [class.active]="currentPage === i + 1"
+              (click)="changePage(i + 1)">
+              {{ i + 1 }}
+            </button>
+          </div>
+          
+          <button 
+            class="page-btn next" 
+            [disabled]="currentPage === totalPages"
+            (click)="changePage(currentPage + 1)">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div> 

@@ -1,0 +1,24 @@
+<section class="hero">
+  <div class="hero-slider">
+    <div *ngFor="let slide of slides; let i = index" 
+         class="hero-slide" 
+         [class.active]="slide.active"
+         [style.background-image]="'url(' + slide.image + ')'">
+      <div class="hero-content">
+        <h1 class="hero-title">{{ slide.title }}</h1>
+        <p class="hero-subtitle">{{ slide.subtitle }}</p>
+        <a [routerLink]="'/products'" class="hero-cta">{{ slide.cta }}</a>
+      </div>
+    </div>
+    
+    <button class="slider-btn prev" (click)="prevSlide()">❮</button>
+    <button class="slider-btn next" (click)="nextSlide()">❯</button>
+    
+    <div class="slider-dots">
+      <span *ngFor="let slide of slides; let i = index" 
+            class="dot" 
+            [class.active]="i === currentSlide"
+            (click)="goToSlide(i)"></span>
+    </div>
+  </div>
+</section>

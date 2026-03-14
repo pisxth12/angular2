@@ -1,0 +1,67 @@
+<div class="product-card">
+  <!-- Product Image with Quick View -->
+  <div class="product-image">
+    <img [src]="product.image" [alt]="product.name" loading="lazy">
+    
+    <!-- Badges -->
+    <span class="product-badge" *ngIf="product.featured">Featured</span>
+    <span class="product-badge sale" *ngIf="product.rating > 4.7">Top Rated</span>
+    
+    <!-- Quick View Overlay -->
+    <div class="quick-view" *ngIf="showQuickView" (click)="onQuickView($event)">
+      <button class="quick-view-btn">Quick View</button>
+    </div>
+  </div>
+  
+  <!-- Product Info -->
+  <div class="product-info">
+    <div class="product-category">{{ product.category }}</div>
+    <h3 class="product-name">{{ product.name }}</h3>
+    
+    <!-- Price with possible discount -->
+    <div class="product-price">
+      <span *ngIf="!getDiscountPrice()">${{ product.price.toFixed(2) }}</span>
+      <span *ngIf="getDiscountPrice()">
+        <span style="text-decoration: line-through; color: #999; font-size: 1rem;">${{ product.price.toFixed(2) }}</span>
+        ${{ getDiscountPrice()?.toFixed(2) }}
+      </span>
+    </div>
+    
+    <!-- Rating -->
+    <div class="product-rating">
+      <span class="stars">
+        <span *ngFor="let star of getStarsArray()" 
+              class="star" 
+              [class.filled]="star <= product.rating">★</span>
+      </span>
+      <span class="rating-value">({{ product.rating }}/5)</span>
+    </div>
+    
+    <!-- Description -->
+    <p class="product-description">{{ product.description }}</p>
+    
+    <!-- Stock Status -->
+    <div class="stock-status">
+      <span [class]="getStockStatus().class">
+        <i *ngIf="product.inStock">✓</i>
+        <i *ngIf="!product.inStock">✗</i>
+        {{ getStockStatus().text }}
+      </span>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="product-actions">
+      <a [routerLink]="['/products', product.id]" class="btn btn-details">
+        <span>👁️</span> Details
+      </a>
+      <button 
+        class="btn btn-cart" 
+        (click)="addToCart($event)"
+        [disabled]="!product.inStock">
+        <span *ngIf="product.inStock">🛒</span>
+        <span *ngIf="!product.inStock">🚫</span>
+        {{ product.inStock ? 'Add to Cart' : 'Out of Stock' }}
+      </button>
+    </div>
+  </div>
+</div>

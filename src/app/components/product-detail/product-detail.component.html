@@ -1,0 +1,168 @@
+<div class="product-detail" *ngIf="!loading && product; else loadingTemplate">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a routerLink="/">Home</a> >
+    <a routerLink="/products">Products</a> >
+    <a [routerLink]="['/products']" [queryParams]="{category: product.category}">{{ product.category }}</a> >
+    <span>{{ product.name }}</span>
+  </div>
+  
+  <!-- Product Main Section -->
+  <div class="product-main">
+    <!-- Product Images -->
+    <div class="product-images">
+      <div class="main-image">
+        <img [src]="product.image" [alt]="product.name">
+        <span class="product-badge" *ngIf="product.featured">Featured</span>
+      </div>
+    </div>
+    
+    <!-- Product Info -->
+    <div class="product-info">
+      <h1 class="product-title">{{ product.name }}</h1>
+      
+      <div class="product-meta">
+        <div class="product-rating">
+          <span class="stars">
+            <span *ngFor="let star of getStarsArray()" 
+                  class="star" 
+                  [class.filled]="star <= product.rating">★</span>
+          </span>
+          <span class="rating-value">{{ product.rating }} / 5</span>
+        </div>
+        
+        <div class="product-stock" [class.in-stock]="product.inStock" [class.out-of-stock]="!product.inStock">
+          {{ product.inStock ? '✓ In Stock' : '✗ Out of Stock' }}
+        </div>
+      </div>
+      
+      <div class="product-price">
+        ${{ product.price.toFixed(2) }}
+      </div>
+      
+      <div class="product-description">
+        <p>{{ product.description }}</p>
+      </div>
+      
+      <!-- Quantity Selector -->
+      <div class="quantity-selector" *ngIf="product.inStock">
+        <label>Quantity:</label>
+        <div class="quantity-controls">
+          <button (click)="decreaseQuantity()" [disabled]="quantity <= 1">−</button>
+          <input type="number" [(ngModel)]="quantity" min="1" max="10" readonly>
+          <button (click)="increaseQuantity()" [disabled]="quantity >= 10">+</button>
+        </div>
+        <span class="stock-limit">Maximum 10 units per order</span>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn btn-primary" (click)="addToCart()" [disabled]="!product.inStock">
+          <span>🛒</span> Add to Cart
+        </button>
+        <button class="btn btn-secondary" (click)="buyNow()" [disabled]="!product.inStock">
+          Buy Now
+        </button>
+        <button class="btn btn-wishlist">
+          <span>❤️</span>
+        </button>
+      </div>
+      
+      <!-- Additional Info -->
+      <div class="additional-info">
+        <div class="info-item">
+          <span class="info-icon">🚚</span>
+          <span>Free shipping on orders over $50</span>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">↩️</span>
+          <span>30-day easy returns</span>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">🔒</span>
+          <span>Secure checkout</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Product Tabs -->
+  <div class="product-tabs">
+    <div class="tab-headers">
+      <button class="tab-header" [class.active]="selectedTab === 'description'" (click)="selectedTab = 'description'">
+        Description
+      </button>
+      <button class="tab-header" [class.active]="selectedTab === 'specifications'" (click)="selectedTab = 'specifications'">
+        Specifications
+      </button>
+      <button class="tab-header" [class.active]="selectedTab === 'reviews'" (click)="selectedTab = 'reviews'">
+        Reviews
+      </button>
+    </div>
+    
+    <div class="tab-content">
+      <!-- Description Tab -->
+      <div class="tab-pane" *ngIf="selectedTab === 'description'">
+        <p>{{ product.description }}</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+      </div>
+      
+      <!-- Specifications Tab -->
+      <div class="tab-pane" *ngIf="selectedTab === 'specifications'">
+        <table class="specs-table">
+          <tr *ngFor="let spec of product.specifications | keyvalue">
+            <th>{{ spec.key }}</th>
+            <td>{{ spec.value }}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <!-- Reviews Tab -->
+      <div class="tab-pane" *ngIf="selectedTab === 'reviews'">
+        <div class="reviews-summary">
+          <div class="average-rating">
+            <span class="big-rating">{{ product.rating }}</span>
+            <span class="stars">
+              <span *ngFor="let star of getStarsArray()" 
+                    class="star" 
+                    [class.filled]="star <= product.rating">★</span>
+            </span>
+            <span>Based on 128 reviews</span>
+          </div>
+        </div>
+        
+        <div class="review">
+          <div class="review-header">
+            <span class="reviewer">John D.</span>
+            <span class="review-date">2 days ago</span>
+          </div>
+          <div class="review-rating">
+            <span *ngFor="let star of getStarsArray()" 
+                  class="star small" 
+                  [class.filled]="star <= 5">★</span>
+          </div>
+          <p class="review-text">Great product! Exactly as described. Highly recommended.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Related Products -->
+  <div class="related-products" *ngIf="relatedProducts.length > 0">
+    <h2 class="section-title">You May Also Like</h2>
+    <div class="products-grid">
+      <app-product-card 
+        *ngFor="let product of relatedProducts" 
+        [product]="product">
+      </app-product-card>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Template -->
+<ng-template #loadingTemplate>
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading product details...</p>
+  </div>
+</ng-template>
