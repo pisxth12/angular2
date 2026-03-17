@@ -8,7 +8,7 @@ import { AboutComponent } from './components/about/about.component';
 import { ContactComponent } from './components/contact/contact.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: HomeComponent , pathMatch:"full"},
   { path: 'products', component: ProductPageComponent },
   { path: 'products/:id', component: ProductDetailComponent },
   { path: 'checkout', component: CheckoutComponent },

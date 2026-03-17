@@ -1,60 +1,24 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-hero-banner',
-   imports: [CommonModule, RouterModule], 
-  templateUrl: './hero-banner.component.html',
-  styleUrls: ['./hero-banner.component.css']
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div style="position: relative; width: 100%; height: 500px; overflow: hidden;">
+      <!-- Slide 1 with image -->
+      <div style="position: absolute; width: 100%; height: 100%; background-image: url('https://images.unsplash.com/photo-1607082350899-7e105aa886ae?w=1200'); background-size: cover; background-position: center;">
+        <div style="position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.4);"></div>
+        <div style="position: relative; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; color: white; z-index: 2;">
+          <div>
+            <h1 style="font-size: 48px; margin-bottom: 20px;">Summer Sale 2024</h1>
+            <p style="font-size: 24px; margin-bottom: 30px;">Get up to 50% off</p>
+            <a href="/products" style="background: #ff6b6b; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; display: inline-block;">SHOP NOW</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
 })
-export class HeroBannerComponent {
-  slides = [
-    {
-      title: 'Summer Sale 2024',
-      subtitle: 'Get up to 50% off on selected items',
-      cta: 'Shop Now',
-      image: 'https://images.unsplash.com/photo-1607082350899-7e105aa886ae?w=1200',
-      active: true
-    },
-    {
-      title: 'New Arrivals',
-      subtitle: 'Check out our latest collection',
-      cta: 'Explore',
-      image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200',
-      active: false
-    },
-    {
-      title: 'Free Shipping',
-      subtitle: 'On orders over $50',
-      cta: 'Learn More',
-      image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=1200',
-      active: false
-    }
-  ];
-
-  currentSlide = 0;
-
-  constructor() {
-    setInterval(() => {
-      this.nextSlide();
-    }, 5000);
-  }
-
-  nextSlide() {
-    this.slides[this.currentSlide].active = false;
-    this.currentSlide = (this.currentSlide + 1) % this.slides.length;
-    this.slides[this.currentSlide].active = true;
-  }
-
-  prevSlide() {
-    this.slides[this.currentSlide].active = false;
-    this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
-    this.slides[this.currentSlide].active = true;
-  }
-
-  goToSlide(index: number) {
-    this.slides[this.currentSlide].active = false;
-    this.currentSlide = index;
-    this.slides[this.currentSlide].active = true;
-  }
-}
+export class HeroBannerComponent { }
