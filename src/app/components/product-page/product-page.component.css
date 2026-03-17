@@ -39,7 +39,7 @@
 }
 
 .search-input {
-  width: 100%;
+  width: 90%;
   padding: 1rem 1rem 1rem 3rem;
   font-size: 1rem;
   border: 2px solid #e0e0e0;
@@ -74,6 +74,7 @@
   background: white;
   cursor: pointer;
   transition: all 0.3s;
+  
 }
 
 .sort-select:focus {
